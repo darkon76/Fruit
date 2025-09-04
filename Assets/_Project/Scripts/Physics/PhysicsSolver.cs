@@ -6,7 +6,6 @@ namespace Scripts.Physics
     public class PhysicsSolver: MonoBehaviour
     {
         public static PhysicsSolver Instance;
-        private Camera _camera;
         private List<PhysicsObject> _physicObjects;
         [SerializeField] private int capacity = 4;
         [SerializeField] private int RestingCount = 4;
@@ -15,7 +14,6 @@ namespace Scripts.Physics
         private void Awake()
         {
             Instance = this;
-            _camera = Camera.main;
             _physicObjects = new List<PhysicsObject>(4);
         }
 
@@ -36,9 +34,6 @@ namespace Scripts.Physics
         }
         private void Step(float deltaTime)
         {
-            float height = _camera.orthographicSize;
-            float width = height * _camera.aspect;
-
             for (int i = _physicObjects.Count - 1; i >= 0; i--)
             {
                 var physicsObject = _physicObjects[i];
@@ -61,6 +56,10 @@ namespace Scripts.Physics
                 {
                     position.y = physicsObject.Radius;
                     velocity.y *= -physicsObject.Material.CollisionDamping;
+                    if (velocity.y > 0)
+                    {
+                        physicsObject.Collision();
+                    }
                 }
 
                 //Check if there is movement, if not make the shape rest to avoid vibrations.
@@ -77,14 +76,6 @@ namespace Scripts.Physics
                     physicsObject.RestingCounter = 0;
                 }
 
-                if (physicsObject.CanWrapScreen && Mathf.Abs(position.x) > width)
-                {
-                    var x = position.x;
-                    x += width;
-                    x %= width;
-                    x -= width;
-                    position.x = x;
-                }
                 physicsObject.Position = position;
                 physicsObject.Velocity = velocity;
             

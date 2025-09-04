@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 namespace Scripts.Physics
@@ -10,12 +11,13 @@ namespace Scripts.Physics
         public bool IsResting;
         public int RestingCounter = 0;
         public float Radius;
-        public bool CanWrapScreen = false;
 
         public PhysicsMaterialSettings Material;
 
         private PhysicsSolver _solver;
-    
+
+        public event Action OnCollision; 
+
         public PhysicsSolver PhysicsSolver
         {
             set => _solver = value;
@@ -42,5 +44,9 @@ namespace Scripts.Physics
             transform.position = Position;
         }
 
+        public void Collision()
+        {
+            OnCollision?.Invoke();
+        }
     }
 }

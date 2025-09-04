@@ -1,7 +1,9 @@
 using System;
+using System.Collections.Generic;
 using Scripts.Physics;
 using Scripts.Utils;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Scripts.Fruit
 {
@@ -15,17 +17,23 @@ namespace Scripts.Fruit
             Free
         }
     
+        [Header("References")]
+        //At the awake we could find the references but ast the long run it is better to drag and drop at the inspector. 
         [SerializeField] private PhysicsObject _physicsObject;
         [SerializeField] private Interactable _interactable;
+        [SerializeField] private AudioSource _audioSource;
+        [Space]
         public float Radius  = 1;
         [Header("Grow")]
         [SerializeField] private AnimationCurve _growAnimationCurve;
         [SerializeField] private float _growTime = 1;
+        [SerializeField] private AudioClip _growAudioClip;
         [Space] 
         [SerializeField] private AnimationCurve _deformationCurve;
-        [Space] 
+        [Header("Physics")] 
         [SerializeField] private float _launchMultiplier = 2;
         [SerializeField] private Vector3 _addedLaunchForce = new Vector3(0,.1f,0);
+        [SerializeField] private List<ForceToAudio> _groundForceToAudio = new();
         [Space] 
         [SerializeField] private float _autoDestroyTimer = 10f;
         [Header("Debug")]
@@ -41,6 +49,8 @@ namespace Scripts.Fruit
         {
             _interactable.OnInteracted += Interacted;
             _interactable.OnReleased += Released;
+
+            _physicsObject.OnCollision += GroundCollision;
         }
 
         //Because we are pooling we need to reset the local variables.
@@ -49,6 +59,8 @@ namespace Scripts.Fruit
             _currentState = State.Growing;
             _growCurrentTime = 0;
             _autoDestroyCurrentTime = 0;
+            _audioSource.clip = _growAudioClip;
+            _audioSource.Play();
         }
 
         private void OnDisable()
@@ -61,30 +73,27 @@ namespace Scripts.Fruit
         {
             _interactable.OnInteracted -= Interacted;
             _interactable.OnReleased -= Released;
+            
+            _physicsObject.OnCollision -= GroundCollision;
+        }
+        
+        private void GroundCollision()
+        {
+            var velocityMagnitude = Mathf.Abs(_physicsObject.Velocity.y);
+            for (int i = _groundForceToAudio.Count - 1; i >= 0; i--)
+            {
+                if (_groundForceToAudio[i].Force <= velocityMagnitude)
+                {
+                    _audioSource.clip = _groundForceToAudio[i].AudioClip;
+                    _audioSource.Play();
+                    break;
+                }
+            }
         }
 
         private void Update()
         {
-            //Uses the last position of the object to calculate how much the object will be deformed.
-            //The only downside is that it doesn't squishes on collision. That will require soft body physics. 
-            var deltaMovement = transform.position - _lastPosition;
-            _lastPosition = transform.position;
-        
-            var difference = Mathf.Abs(deltaMovement.x) - Mathf.Abs(deltaMovement.y);
-            var absDifference = Mathf.Abs(difference);
-            var evaluatedDeformation = _deformationCurve.Evaluate(absDifference);
-            Vector3 scale ;
-            if (difference > 0)
-            {
-                scale = new Vector3(1 + evaluatedDeformation, 1 - evaluatedDeformation, 0);
-            }
-            else
-            {
-                scale = new Vector3(1 - evaluatedDeformation, 1 + evaluatedDeformation, 0);
-            }
-
-            transform.localScale = scale;
-        
+            DeformScale();
         
             switch (_currentState)
             {
@@ -114,6 +123,28 @@ namespace Scripts.Fruit
                 default:
                     throw new ArgumentOutOfRangeException();
             }
+        }
+        private void DeformScale()
+        {
+            //Uses the last position of the object to calculate how much the object will be deformed.
+            //The only downside is that it doesn't squishes on collision. That will require soft body physics. 
+            var deltaMovement = transform.position - _lastPosition;
+            _lastPosition = transform.position;
+        
+            var difference = Mathf.Abs(deltaMovement.x) - Mathf.Abs(deltaMovement.y);
+            var absDifference = Mathf.Abs(difference);
+            var evaluatedDeformation = _deformationCurve.Evaluate(absDifference);
+            Vector3 scale ;
+            if (difference > 0)
+            {
+                scale = new Vector3(1 + evaluatedDeformation, 1 - evaluatedDeformation, 0);
+            }
+            else
+            {
+                scale = new Vector3(1 - evaluatedDeformation, 1 + evaluatedDeformation, 0);
+            }
+
+            transform.localScale = scale;
         }
 
         private void Released()
