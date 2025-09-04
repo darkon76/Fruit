@@ -6,6 +6,7 @@ namespace Scripts.Fruit
     public class FruitSpawner : MonoBehaviour
     {
         [SerializeField] private ObjectPoolSO _objectPoolSo;
+        [SerializeField] private Tree _tree;
         private Fruit _spawnedFruit;
     
         // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -29,11 +30,18 @@ namespace Scripts.Fruit
             }
         }
 
+        private void Update()
+        {
+            //Because the tree can shake we need to update the fruits.
+            _spawnedFruit.transform.position = transform.position;
+        }
+
         private void FruitOnInteracted()
         {
             _spawnedFruit.OnInteracted -= FruitOnInteracted;
             _spawnedFruit = null;
             Spawn();
+            _tree.FruitPulled(this);
         }
     }
 }
