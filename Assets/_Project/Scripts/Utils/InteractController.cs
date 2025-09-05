@@ -13,6 +13,9 @@ namespace Scripts.Utils
         private HashSet<Interactable> _interacted = new HashSet<Interactable>();
     
         private Camera _camera;
+        [SerializeField] private Vector3 _deltaMousePosition;
+        public Vector3 DeltaPosition => _deltaMousePosition;
+        [SerializeField] private Vector3 _lastMousePosition;
     
         // Start is called once before the first execution of Update after the MonoBehaviour is created
         void Awake()
@@ -24,6 +27,9 @@ namespace Scripts.Utils
         // Update is called once per frame
         void Update()
         {
+            _deltaMousePosition = Input.mousePosition - _lastMousePosition;
+            _lastMousePosition = Input.mousePosition;
+            
             //We will be using the old input system to identify if the mouse was pressed, I personally prefer using the Event System but because I wanted to avoid canvas objects and physics objects it will not be used. 
             if (Input.GetMouseButton(0))
             {

@@ -7,6 +7,7 @@ namespace Scripts.Fruit
     {
         [SerializeField] private ObjectPoolSO _objectPoolSo;
         [SerializeField] private Tree _tree;
+        [SerializeField] private ParticleSystem _particleSystem;
         private Fruit _spawnedFruit;
     
         // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -42,6 +43,7 @@ namespace Scripts.Fruit
             _spawnedFruit = null;
             Spawn();
             _tree.FruitPulled(this);
+            _particleSystem.Play();
         }
     }
 }

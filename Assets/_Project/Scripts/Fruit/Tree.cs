@@ -1,6 +1,4 @@
-using System;
 using Scripts.Fruit;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class Tree : MonoBehaviour
@@ -12,7 +10,7 @@ public class Tree : MonoBehaviour
     }
 
     [SerializeField] private float _shakeTime = .3f;
-    [SerializeField] private float _shakeSpeed = 1f;
+    [SerializeField] private float _shakeForce = 1f;
     [Header("Debug")] 
     [SerializeField] private State _currentState;
     [SerializeField] private Quaternion _referenceOrientation;
@@ -29,10 +27,9 @@ public class Tree : MonoBehaviour
                 transform.rotation = Quaternion.identity;
                 return;
             }
-            var slerp = 1 - _shakeCurrentTime / _shakeTime;
-            var ping = Mathf.PingPong(_shakeCurrentTime * _shakeSpeed, slerp);
+            var slerp = _shakeCurrentTime / _shakeTime;
             
-            transform.rotation = Quaternion.Slerp(Quaternion.identity,_referenceOrientation, ping);
+            transform.rotation = Quaternion.Slerp(_referenceOrientation, Quaternion.identity, slerp);
             
         }
     }
@@ -40,9 +37,11 @@ public class Tree : MonoBehaviour
     public void FruitPulled(FruitSpawner fruitSpawner)
     {
         _shakeCurrentTime = 0;
-
-        var target = fruitSpawner.transform.position - transform.position;
+        var target = (fruitSpawner.transform.position - transform.position);
+        target.x *= _shakeForce;
         _referenceOrientation = Quaternion.FromToRotation(Vector3.up, target);
+        
+        
         _currentState = State.Shaking;
     }
 }
