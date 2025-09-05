@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 66fef27c21690814e99d6580cf2bc03b, type: 3}
   m_Name: GreenAppleMaterial
   m_EditorClassIdentifier: 
-  _collisionDamping: 0.5
+  _collisionDamping: 0.9
   _drag: 0.003

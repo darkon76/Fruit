@@ -37,7 +37,9 @@ public class Tree : MonoBehaviour
     public void FruitPulled(FruitSpawner fruitSpawner)
     {
         _shakeCurrentTime = 0;
-        var target = (fruitSpawner.transform.position - transform.position);
+        var fruitSpawnerPosition = fruitSpawner.transform.position;
+        fruitSpawnerPosition.z = transform.position.z;
+        var target = (fruitSpawnerPosition - transform.position);
         target.x *= _shakeForce;
         _referenceOrientation = Quaternion.FromToRotation(Vector3.up, target);
         

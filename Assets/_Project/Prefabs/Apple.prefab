@@ -295,7 +295,7 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  _launchMultiplier: 15
+  _launchMultiplier: 30
   _addedLaunchForce: {x: 0, y: 1, z: 0}
   _groundForceToAudio:
   - Force: 1
@@ -320,12 +320,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Position: {x: 0, y: 0}
   Velocity: {x: 0, y: 0}
-  Acceleration: {x: 0, y: -9.81}
+  Acceleration: {x: 0, y: -20}
   IsResting: 0
   RestingCounter: 0
   Radius: 0.5
-  CanWrapScreen: 0
-  Material: {fileID: 11400000, guid: 8b13f65a619d94f48a329c2a67509ac6, type: 2}
+  Material: {fileID: 11400000, guid: 560b2b3215d05f947a66721eda93a82f, type: 2}
 --- !u!114 &-4445501253417118627
 MonoBehaviour:
   m_ObjectHideFlags: 0

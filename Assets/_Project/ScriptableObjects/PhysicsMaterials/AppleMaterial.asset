@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 66fef27c21690814e99d6580cf2bc03b, type: 3}
   m_Name: AppleMaterial
   m_EditorClassIdentifier: 
-  _collisionDamping: 0.8
-  _drag: 0.003
+  _collisionDamping: 0.3
+  _drag: 0.01
